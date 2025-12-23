@@ -146,7 +146,7 @@ const int LOG_LENGTH = 800;
 
         NSString *gfm = pluginSettings[@"com.salesforce.marketingcloud.geofence_messaging"];
         if (gfm != nil && [gfm caseInsensitiveCompare:@"true"] == NSOrderedSame) {
-            [configBuilder setGeofencingEnabled:YES];
+            [configBuilder sfmc_setLocationEnabled:@YES];
         }
         
         NSError *configError = nil;
@@ -478,51 +478,44 @@ const int LOG_LENGTH = 800;
 - (void)isPiAnalyticsEnabled:(CDVInvokedUrlCommand *)command {
     [SFMCSdk requestPushSdk:^(id<PushInterface> _Nonnull mp) {
         BOOL isEnabled = [mp isPiAnalyticsEnabled];
-        [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:isEnabled] callbackId:command.callbackId];
-    }];
-}
-
-- (void)locationEnabled:(CDVInvokedUrlCommand *)command {
-	[SFMCSdk requestLocationSdk:^(id<LocationInterface> _Nonnull location) {
-		BOOL success = [location locationEnabled];
-		[self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-		                                        messageAsInt:(success) ? 1 : 0]
-		 callbackId:command.callbackId];
-	}];
-}
-
-- (void)startWatchingLocation:(CDVInvokedUrlCommand *)command {
-    [SFMCSdk requestLocationSdk:^(id<LocationInterface> _Nonnull location) {
-        [location startWatchingLocation];
-        [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK]
-                                    callbackId:command.callbackId];
-    }];
-}
-
-- (void)stopWatchingLocation:(CDVInvokedUrlCommand *)command {
-    [SFMCSdk requestLocationSdk:^(id<LocationInterface> _Nonnull location) {
-        [location stopWatchingLocation];
-        [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK]
-                                    callbackId:command.callbackId];
-    }];
-}
-
-- (void)watchingLocation:(CDVInvokedUrlCommand *)command {
-	[SFMCSdk requestLocationSdk:^(id<LocationInterface> _Nonnull location) {
-		BOOL success = [location watchingLocation];
-		[self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-		                                        messageAsInt:(success) ? 1 : 0]
-		 callbackId:command.callbackId];
-	}];
-}
-
-- (void)lastKnownLocation:(CDVInvokedUrlCommand *)command {
-	[SFMCSdk requestLocationSdk:^(id<LocationInterface> _Nonnull location) {
-		NSDictionary<NSString *, NSString *> *lastLocation = [location lastKnownLocation];
+        [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:isEnabled] callbackId:command.callbackId	NSDictionary<NSString *, NSString *> *lastLocation = [location lastKnownLocation];
 		[self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK
 		                                        messageAsDictionary:lastLocation]
 		 callbackId:command.callbackId];
 	}];
+}
+
+- (void)locationEnabled:(CDVInvokedUrlCommand *)command {
+	BOOL success = [[SFMCSdk mp] sfmc_locationEnabled];
+	[self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+	                                        messageAsInt:(success) ? 1 : 0]
+	 callbackId:command.callbackId];
+}
+
+- (void)startWatchingLocation:(CDVInvokedUrlCommand *)command {
+    [[SFMCSdk mp] sfmc_startWatchingLocation];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK]
+                                callbackId:command.callbackId];
+}
+
+- (void)sfmc_stopWatchingLocation:(CDVInvokedUrlCommand *)command {
+    [[SFMCSdk mp] sfmc_stopWatchingLocation];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK]
+                                callbackId:command.callbackId];
+}
+
+- (void)watchingLocation:(CDVInvokedUrlCommand *)command {
+	BOOL success = [[SFMCSdk mp] sfmc_watchingLocation];
+	[self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+	                                        messageAsInt:(success) ? 1 : 0]
+	 callbackId:command.callbackId];
+}
+
+- (void)lastKnownLocation:(CDVInvokedUrlCommand *)command {
+	NSDictionary<NSString *, NSString *> *lastLocation = [[SFMCSdk mp] sfmc_lastKnownLocation];
+	[self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK
+	                                        messageAsDictionary:lastLocation]
+	 callbackId:command.callbackId];
 }
 
 @end
