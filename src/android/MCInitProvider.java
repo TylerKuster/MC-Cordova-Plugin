@@ -47,71 +47,72 @@ import com.salesforce.marketingcloud.sfmcsdk.modules.push.PushModuleReadyListene
 import com.salesforce.marketingcloud.sfmcsdk.modules.ModuleInterface;
 
 public class MCInitProvider extends ContentProvider {
-    @Override
-    public boolean onCreate() {
-        Context ctx = getContext();
-        if (ctx != null) {
-            SFMCSdk.configure(ctx, SFMCSdkModuleConfig.build(builder -> {
-                MarketingCloudConfig.Builder mcBuilder = MCSdkConfig.prepareConfigBuilder(ctx);
-                if (mcBuilder != null) {
-                    mcBuilder.setUrlHandler(MCSdkListener.INSTANCE);
-                    builder.setPushModuleConfig(mcBuilder.build(ctx));
-                }
-                return null;
-            }), initializationStatus -> {
-                if (initializationStatus.getStatus() == InitializationStatus.SUCCESS) {
-                    SFMCSdk.requestSdk(new SFMCSdkReadyListener() {
-                        @Override
-                        public void ready(@NonNull SFMCSdk sfmcSdk) {
-                            sfmcSdk.mp(new PushModuleReadyListener() {
-                                @Override
-                                public void ready(@NonNull PushModuleInterface pushModuleInterface) {
-                                    pushModuleInterface.getRegistrationManager().edit()
-                                            .addTag("Cordova").commit();
-                                }
-
-                                @Override
-                                public void ready(@NonNull ModuleInterface moduleInterface) {
-                                    this.ready((PushModuleInterface) moduleInterface);
-                                }
-                            });
-                        }
-                    });
-                }
-                return null;
-            });
+  @Override
+  public boolean onCreate() {
+    Context ctx = getContext();
+    if (ctx != null) {
+      SFMCSdk.configure(ctx, SFMCSdkModuleConfig.build(builder -> {
+        MarketingCloudConfig.Builder mcBuilder = MCSdkConfig.prepareConfigBuilder(ctx);
+        if (mcBuilder != null) {
+          mcBuilder.setUrlHandler(MCSdkListener.INSTANCE);
+          builder.setPushModuleConfig(mcBuilder.build(ctx));
+          mcBuilder.setGeofencingEnabled(true).build(ctx);
         }
-        return false;
-    }
-
-    @Nullable
-    @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
-            @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         return null;
-    }
+      }), initializationStatus -> {
+        if (initializationStatus.getStatus() == InitializationStatus.SUCCESS) {
+          SFMCSdk.requestSdk(new SFMCSdkReadyListener() {
+            @Override
+            public void ready(@NonNull SFMCSdk sfmcSdk) {
+              sfmcSdk.mp(new PushModuleReadyListener() {
+                @Override
+                public void ready(@NonNull PushModuleInterface pushModuleInterface) {
+                  pushModuleInterface.getRegistrationManager().edit()
+                    .addTag("Cordova").commit();
+                }
 
-    @Nullable
-    @Override
-    public String getType(@NonNull Uri uri) {
+                @Override
+                public void ready(@NonNull ModuleInterface moduleInterface) {
+                  this.ready((PushModuleInterface) moduleInterface);
+                }
+              });
+            }
+          });
+        }
         return null;
+      });
     }
+    return false;
+  }
 
-    @Nullable
-    @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        return null;
-    }
+  @Nullable
+  @Override
+  public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                      @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    return null;
+  }
 
-    @Override
-    public int delete(
-            @NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
-    }
+  @Nullable
+  @Override
+  public String getType(@NonNull Uri uri) {
+    return null;
+  }
 
-    @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
-            @Nullable String[] selectionArgs) {
-        return 0;
-    }
+  @Nullable
+  @Override
+  public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
+    return null;
+  }
+
+  @Override
+  public int delete(
+    @NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+    return 0;
+  }
+
+  @Override
+  public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
+                    @Nullable String[] selectionArgs) {
+    return 0;
+  }
 }
