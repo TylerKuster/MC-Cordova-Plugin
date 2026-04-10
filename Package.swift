@@ -2,18 +2,18 @@
 import PackageDescription
 
 let package = Package(
-    name: "CordovaPluginMarketingcloudsdk",
+    name: "SFMCSDK",
     platforms: [.iOS(.v14)],
     products: [
         .library(
-            name: "CordovaPluginMarketingcloudsdk",
-            targets: ["CordovaPluginMarketingcloudsdk"]
+            name: "SFMCSDK",
+            targets: ["SFMCSDK"]
         )
     ],
     dependencies: [],
     targets: [
         .target(
-            name: "CordovaPluginMarketingcloudsdk",
+            name: "SFMCSDK",
             dependencies: [],
             path: ".",  // points to the plugin source in this directory
             publicHeadersPath: ".",
